@@ -1,0 +1,41 @@
+name: "Update RSS feed"
+author: "Ris Adams"
+description: "Updates a markdown file with an RSS feed"
+
+inputs:
+  gh_token:
+    description: "GitHub token"
+    required: false
+    default: ${{ github.token }}
+  file_path:
+    description: "Path to the file to update"
+    required: true
+    default: "./README.md"
+  feed_list:
+    description: "List of RSS feeds to include (comma separated for multiple)"
+    required: true
+    default: ""
+  max_items:
+    description: "Maximum number of items to include"
+    required: false
+    default: "5"
+  commit_mesage:
+    description: "Commit message"
+    required: false
+    default: "Update RSS feed"
+  commit_author:
+    description: "Commit author"
+    required: false
+    default: "update-rss-feed[bot]"
+
+outputs:
+  feed_results:
+    description: "Results of the update"
+
+runs:
+  using: node16
+  main: dist/update-md-rss.js
+
+branding:
+  icon: "rss"
+  color: "purple"

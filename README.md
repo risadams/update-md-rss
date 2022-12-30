@@ -1,6 +1,6 @@
 # Update MD RSS (Github Action)
 
-[![GitHub Actions status | risadams/update-md-rss](
+<!-- [![GitHub Actions status | risadams/update-md-rss]( -->
 
 ## Usage
 

@@ -4,6 +4,7 @@
   "description": "Updates a markdown file with the contents of an RSS feed",
   "main": "index.js",
   "scripts": {
+    "build": "gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/risadams/update-md-rss/issues"
   },
-  "homepage": "https://github.com/risadams/update-md-rss#readme"
+  "homepage": "https://github.com/risadams/update-md-rss#readme",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1",
+    "rss-parser": "^3.12.0",
+    "gulp": "^4.0.2"
+  }
 }
