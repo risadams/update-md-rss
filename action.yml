@@ -46,7 +46,7 @@ outputs:
 
 runs:
   using: node16
-  main: dist/update-md-rss.js
+  main: dist/index.js
 
 branding:
   icon: 'rss'
