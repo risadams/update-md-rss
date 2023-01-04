@@ -12,6 +12,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Fetch RSS feed
-        uses: risadams/update-md-rss@v1.0.1
+        uses: risadams/update-md-rss@v1.0.2
         with:
           feed_list: 'https://risadams.com/feed.xml' ## Update this with your feed URL
