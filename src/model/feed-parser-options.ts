@@ -8,12 +8,10 @@
  * The `FeedParserOptions` type is used in the `FeedParser` class constructor:
  * @property {string[]} feedNamesList - An array of feed names to be used in the feed URL.
  * @property {string} userAgent - The user agent to use when making requests to the feed.
- * @property {string} acceptHeader - The accept header to use when making requests to the feed.
  * @property {number} maxItems - The maximum number of items to return from the feed.
  */
 export type FeedParserOptions = {
   feedNamesList: string[]
   userAgent: string
-  acceptHeader: string
   maxItems: number
 }

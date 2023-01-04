@@ -11,8 +11,7 @@ import {Post} from './model/post'
 export async function FeedParser(options: FeedParserOptions): Promise<Feed[]> {
   const parser: Parser = new Parser({
     headers: {
-      'User-Agent': options.userAgent,
-      Accept: options.acceptHeader
+      'User-Agent': options.userAgent
     }
   })
 

@@ -12,7 +12,6 @@ async function run(): Promise<void> {
     const GITHUB_TOKEN: string = core.getInput('gh_token')
     const rawFeedListArg: string = core.getInput('feed_list')?.trim()
     const userAgent: string = core.getInput('user_agent')?.trim()
-    const acceptHeader: string = core.getInput('accept_header')?.trim()
     const maxItems: number = parseInt(core.getInput('max_items'), 10)
     const filePath: string = core.getInput('file_path')?.trim()
     const gitUser = core.getInput('commit_email')
@@ -36,7 +35,6 @@ async function run(): Promise<void> {
     const feeds = await FeedParser({
       feedNamesList,
       userAgent,
-      acceptHeader,
       maxItems
     })
 
