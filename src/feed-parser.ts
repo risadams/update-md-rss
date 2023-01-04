@@ -3,25 +3,30 @@ import {Feed} from './model/feed'
 import {FeedParserOptions} from './model/feed-parser-options'
 import {Post} from './model/post'
 
-export async function FeedParser(args: FeedParserOptions): Promise<Feed[]> {
+/**
+ * It takes a list of RSS feed URLs, fetches them, parses them, and returns a list of posts
+ * @param {FeedParserOptions} options - FeedParserOptions
+ * @returns An array of Feed objects.
+ */
+export async function FeedParser(options: FeedParserOptions): Promise<Feed[]> {
   const parser: Parser = new Parser({
     headers: {
-      'User-Agent': args.userAgent,
-      Accept: args.acceptHeader
+      'User-Agent': options.userAgent,
+      Accept: options.acceptHeader
     }
   })
 
-  if (isNaN(args.maxItems)) {
+  if (isNaN(options.maxItems)) {
     throw new Error('max items not a number')
   }
 
-  if (args.feedNamesList.length === 0) {
+  if (options.feedNamesList.length === 0) {
     throw new Error('feed_list should have at least one url')
   }
 
   const parsedFeeds: Feed[] = []
 
-  for (const feedUrl of args.feedNamesList) {
+  for (const feedUrl of options.feedNamesList) {
     const feed = await parser.parseURL(feedUrl)
     const posts: Post[] = []
     const title = feed.title
@@ -39,7 +44,7 @@ export async function FeedParser(args: FeedParserOptions): Promise<Feed[]> {
     }
 
     posts.sort((a, b) => b.date.valueOf() - a.date.valueOf())
-    posts.slice(0, args.maxItems)
+    posts.slice(0, options.maxItems)
 
     parsedFeeds.push({title, posts})
   }

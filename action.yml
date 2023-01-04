@@ -22,11 +22,15 @@ inputs:
   commit_mesage:
     description: 'Commit message'
     required: false
-    default: 'Update RSS feed'
+    default: 'Updated RSS feed'
   commit_author:
     description: 'Commit author'
     required: false
     default: 'update-rss-feed[bot]'
+  commit_email:
+    description: 'Commit author'
+    required: false
+    default: 'update-rss-feed[bot]@example.com'
   user_agent:
     description: 'Allows you to customize the user agent used by the RSS feed crawler'
     default: 'github-actions-bot'

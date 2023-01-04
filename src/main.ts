@@ -2,6 +2,8 @@ import * as core from '@actions/core'
 import * as process from 'process'
 import {FeedParser} from './feed-parser'
 import {TemplateBuilder} from './template-builder'
+import {FileUpdater} from './file-updater'
+import {exec} from './exec'
 
 async function run(): Promise<void> {
   try {
@@ -12,6 +14,10 @@ async function run(): Promise<void> {
     const userAgent: string = core.getInput('user_agent')?.trim()
     const acceptHeader: string = core.getInput('accept_header')?.trim()
     const maxItems: number = parseInt(core.getInput('max_items'), 10)
+    const filePath: string = core.getInput('file_path')?.trim()
+    const gitUser = core.getInput('commit_email')
+    const gitEmail = core.getInput('committer_email')
+    const commitMessage = core.getInput('commit_message')
 
     core.setSecret(GITHUB_TOKEN)
 
@@ -37,7 +43,33 @@ async function run(): Promise<void> {
     // Converte the parsed feeds into a markdown template
     const template = await TemplateBuilder(feeds)
 
-    core.debug(template)
+    await FileUpdater({
+      file: filePath,
+      tokenStart: 'REPLACE_BLOG_START',
+      tokenEnd: 'REPLACE_BLOG_END',
+      content: template
+    })
+
+    // Commit to readme
+
+    //set git email address
+    await exec('git', ['config', '--global', 'user.email', gitEmail], {})
+    await exec('git', ['config', '--global', 'user.name', gitUser], {})
+    //set git auth token
+    await exec(
+      'git',
+      [
+        'remote',
+        'set-url',
+        'origin',
+        `https://${githubToken}@github.com/${process.env.GITHUB_REPOSITORY}.git`
+      ],
+      {}
+    )
+
+    await exec('git', ['add', filePath], {})
+    await exec('git', ['commit', '-m', commitMessage], {})
+    await exec('git', ['push'], {})
 
     core.debug(new Date().toTimeString())
     core.setOutput('time', new Date().toTimeString())

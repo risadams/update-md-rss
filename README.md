@@ -11,7 +11,7 @@
 name: Update RSS Feeds
 on:
   schedule: # Run workflow automatically
-    - cron: "0 * * * *" # Runs every hour
+    - cron: '0 * * * *' # Runs every hour
   workflow_dispatch: # Run workflow manually, from Github Actions tab
 
 jobs:
@@ -24,13 +24,18 @@ jobs:
       - name: Fetch RSS feed
         uses: risadams/update-md-rss@v1
         with:
-          feed_list: "https://risadams.com/feed.xml" ## Update this with your feed URL
+          feed_list: 'https://risadams.com/feed.xml' ## Update this with your feed URL
 ```
 
 ### Examples
 
 - [ ] Is there an example folder with usage examples?
 - [ ] For the browser as well?
+
+## Feed Output
+
+<!--REPLACE_BLOG_START-->
+<!--REPLACE_BLOG_END-->
 
 ## Contribute
 
