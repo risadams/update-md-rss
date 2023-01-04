@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as process from 'process'
 import {FeedParser} from './feed-parser'
+import {TemplateBuilder} from './template-builder'
 
 async function run(): Promise<void> {
   try {
@@ -25,14 +26,18 @@ async function run(): Promise<void> {
     const feedNames = core.getInput('feed_names').trim()
     const feedNamesList = feedNames.split(',').map(item => item.trim())
 
-    const feeds = await FeedParser(
+    // Fetch and parse feeds
+    const feeds = await FeedParser({
       feedNamesList,
       userAgent,
       acceptHeader,
       maxItems
-    )
+    })
 
-    core.debug(JSON.stringify(feeds))
+    // Converte the parsed feeds into a markdown template
+    const template = await TemplateBuilder(feeds)
+
+    core.debug(template)
 
     core.debug(new Date().toTimeString())
     core.setOutput('time', new Date().toTimeString())
