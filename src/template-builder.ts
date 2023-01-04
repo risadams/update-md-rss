@@ -1,4 +1,4 @@
-import {Feed} from './Feed'
+import {Feed} from './model/feed'
 
 export async function TemplateBuilder(feeds: Feed[]): Promise<string> {
   let md = ''

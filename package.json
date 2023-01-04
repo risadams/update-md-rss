@@ -11,7 +11,7 @@
   "main": "dist/main.js",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint src/**/*.ts --ignore-pattern '*.test*.*'",
+    "lint": "eslint src/**/*.ts",
     "format": "prettier --write src/**/*.ts",
     "format:check": "prettier --check src/**/*.ts",
     "pretest": "npm run build",

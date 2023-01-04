@@ -1,6 +1,6 @@
 import {expect, test} from '@jest/globals'
-import {FeedParser} from '../feed-parser'
-import {TemplateBuilder} from '../template-builder'
+import {FeedParser} from '../src/feed-parser'
+import {TemplateBuilder} from '../src/template-builder'
 
 const defaultOptions = {
   maxItems: 5,

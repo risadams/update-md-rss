@@ -1,7 +1,7 @@
 import Parser from 'rss-parser'
-import {Feed} from './Feed'
-import {FeedParserOptions} from './FeedParserOptions'
-import {Post} from './Post'
+import {Feed} from './model/feed'
+import {FeedParserOptions} from './model/feed-parser-options'
+import {Post} from './model/post'
 
 export async function FeedParser(args: FeedParserOptions): Promise<Feed[]> {
   const parser: Parser = new Parser({
