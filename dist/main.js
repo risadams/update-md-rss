@@ -37,19 +37,19 @@ const process = __importStar(require("process"));
 const feed_parser_1 = require("./feed-parser");
 const template_builder_1 = require("./template-builder");
 const file_updater_1 = require("./file-updater");
+const exec_1 = require("./exec");
 function run() {
-    var _a, _b, _c, _d;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.debug(new Date().toTimeString());
             const GITHUB_TOKEN = core.getInput('gh_token');
             const rawFeedListArg = (_a = core.getInput('feed_list')) === null || _a === void 0 ? void 0 : _a.trim();
             const userAgent = (_b = core.getInput('user_agent')) === null || _b === void 0 ? void 0 : _b.trim();
-            const acceptHeader = (_c = core.getInput('accept_header')) === null || _c === void 0 ? void 0 : _c.trim();
             const maxItems = parseInt(core.getInput('max_items'), 10);
-            const filePath = (_d = core.getInput('file_path')) === null || _d === void 0 ? void 0 : _d.trim();
-            const committerUsername = core.getInput('commit_email');
-            const committerEmail = core.getInput('committer_email');
+            const filePath = (_c = core.getInput('file_path')) === null || _c === void 0 ? void 0 : _c.trim();
+            const gitUser = core.getInput('commit_email');
+            const gitEmail = core.getInput('committer_email');
             const commitMessage = core.getInput('commit_message');
             core.setSecret(GITHUB_TOKEN);
             // Reading feed list from the workflow input
@@ -65,7 +65,6 @@ function run() {
             const feeds = yield (0, feed_parser_1.FeedParser)({
                 feedNamesList,
                 userAgent,
-                acceptHeader,
                 maxItems
             });
             // Converte the parsed feeds into a markdown template
@@ -77,7 +76,19 @@ function run() {
                 content: template
             });
             // Commit to readme
-            yield exec('git', ['config', '--global', 'user.email', committerEmail]);
+            //set git email address
+            yield (0, exec_1.exec)('git', ['config', '--global', 'user.email', gitEmail], {});
+            yield (0, exec_1.exec)('git', ['config', '--global', 'user.name', gitUser], {});
+            //set git auth token
+            yield (0, exec_1.exec)('git', [
+                'remote',
+                'set-url',
+                'origin',
+                `https://${GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`
+            ], {});
+            yield (0, exec_1.exec)('git', ['add', filePath], {});
+            yield (0, exec_1.exec)('git', ['commit', '-m', commitMessage], {});
+            yield (0, exec_1.exec)('git', ['push'], {});
             core.debug(new Date().toTimeString());
             core.setOutput('time', new Date().toTimeString());
         }

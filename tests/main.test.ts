@@ -6,7 +6,6 @@ const defaultOptions = {
   maxItems: 5,
   feedNamesList: ['https://risadams.com/feed.xml'],
   userAgent: '',
-  acceptHeader: ''
 }
 
 test('throws invalid number', async () => {
@@ -16,7 +15,6 @@ test('throws invalid number', async () => {
       maxItems: input,
       feedNamesList: [],
       userAgent: '',
-      acceptHeader: ''
     })
   ).rejects.toThrow('max items not a number')
 })
@@ -27,7 +25,6 @@ test('feed_list should have at least one url', async () => {
       maxItems: 5,
       feedNamesList: [],
       userAgent: '',
-      acceptHeader: ''
     })
   ).rejects.toThrow('feed_list should have at least one url')
 })

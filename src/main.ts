@@ -60,7 +60,7 @@ async function run(): Promise<void> {
         'remote',
         'set-url',
         'origin',
-        `https://${githubToken}@github.com/${process.env.GITHUB_REPOSITORY}.git`
+        `https://${GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`
       ],
       {}
     )

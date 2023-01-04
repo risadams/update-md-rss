@@ -1,6 +1,60 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 4002:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.exec = void 0;
+const child_process_1 = __nccwpck_require__(2081);
+/**
+ * Executes a command and returns its result as promise
+ * @param cmd {string} command to execute
+ * @param args {array} command line args
+ * @param options {Object} extra options
+ * @return {Promise<Object>}
+ */
+function exec(cmd, args, options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve, reject) => {
+            let outputData = '';
+            const optionsToCLI = Object.assign({}, options);
+            if (!optionsToCLI.stdio) {
+                Object.assign(optionsToCLI, { stdio: ['inherit', 'inherit', 'inherit'] });
+            }
+            const app = (0, child_process_1.spawn)(cmd, args, optionsToCLI);
+            if (app.stdout) {
+                // Only needed for pipes
+                app.stdout.on('data', function (data) {
+                    outputData += data.toString();
+                });
+            }
+            app.on('close', (code) => {
+                if (code !== 0) {
+                    return reject(new Error(`${code} ${outputData})`));
+                }
+                return resolve({ code, outputData });
+            });
+            app.on('error', () => reject(new Error(`1 ${outputData})`)));
+        });
+    });
+}
+exports.exec = exec;
+
+
+/***/ }),
+
 /***/ 1677:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -21,13 +75,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FeedParser = void 0;
 const rss_parser_1 = __importDefault(__nccwpck_require__(6946));
+/**
+ * It takes a list of RSS feed URLs, fetches them, parses them, and returns a list of posts
+ * @param {FeedParserOptions} options - FeedParserOptions
+ * @returns An array of Feed objects.
+ */
 function FeedParser(options) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const parser = new rss_parser_1.default({
             headers: {
-                'User-Agent': options.userAgent,
-                Accept: options.acceptHeader
+                'User-Agent': options.userAgent
             }
         });
         if (isNaN(options.maxItems)) {
@@ -84,6 +142,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FileUpdater = void 0;
 const fs_1 = __importDefault(__nccwpck_require__(7147));
+/**
+ * It takes a file, finds the start and end comment tags, and replaces the content between them with
+ * the new content
+ * @param {FileUpdaterOptions} options - {
+ */
 function FileUpdater(options) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -168,17 +231,20 @@ const process = __importStar(__nccwpck_require__(7282));
 const feed_parser_1 = __nccwpck_require__(1677);
 const template_builder_1 = __nccwpck_require__(2120);
 const file_updater_1 = __nccwpck_require__(2138);
+const exec_1 = __nccwpck_require__(4002);
 function run() {
-    var _a, _b, _c, _d;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.debug(new Date().toTimeString());
             const GITHUB_TOKEN = core.getInput('gh_token');
             const rawFeedListArg = (_a = core.getInput('feed_list')) === null || _a === void 0 ? void 0 : _a.trim();
             const userAgent = (_b = core.getInput('user_agent')) === null || _b === void 0 ? void 0 : _b.trim();
-            const acceptHeader = (_c = core.getInput('accept_header')) === null || _c === void 0 ? void 0 : _c.trim();
             const maxItems = parseInt(core.getInput('max_items'), 10);
-            const filePath = (_d = core.getInput('file_path')) === null || _d === void 0 ? void 0 : _d.trim();
+            const filePath = (_c = core.getInput('file_path')) === null || _c === void 0 ? void 0 : _c.trim();
+            const gitUser = core.getInput('commit_email');
+            const gitEmail = core.getInput('committer_email');
+            const commitMessage = core.getInput('commit_message');
             core.setSecret(GITHUB_TOKEN);
             // Reading feed list from the workflow input
             const feedList = rawFeedListArg.split(',').map(item => item.trim());
@@ -193,7 +259,6 @@ function run() {
             const feeds = yield (0, feed_parser_1.FeedParser)({
                 feedNamesList,
                 userAgent,
-                acceptHeader,
                 maxItems
             });
             // Converte the parsed feeds into a markdown template
@@ -204,7 +269,20 @@ function run() {
                 tokenEnd: 'REPLACE_BLOG_END',
                 content: template
             });
-            core.debug(template);
+            // Commit to readme
+            //set git email address
+            yield (0, exec_1.exec)('git', ['config', '--global', 'user.email', gitEmail], {});
+            yield (0, exec_1.exec)('git', ['config', '--global', 'user.name', gitUser], {});
+            //set git auth token
+            yield (0, exec_1.exec)('git', [
+                'remote',
+                'set-url',
+                'origin',
+                `https://${GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`
+            ], {});
+            yield (0, exec_1.exec)('git', ['add', filePath], {});
+            yield (0, exec_1.exec)('git', ['commit', '-m', commitMessage], {});
+            yield (0, exec_1.exec)('git', ['push'], {});
             core.debug(new Date().toTimeString());
             core.setOutput('time', new Date().toTimeString());
         }
@@ -235,6 +313,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TemplateBuilder = void 0;
+/**
+ * It takes an array of feeds and returns a string of generated markdown
+ * @param {Feed[]} feeds - Feed[]
+ * @returns A string of markdown.
+ */
 function TemplateBuilder(feeds) {
     return __awaiter(this, void 0, void 0, function* () {
         let md = '';
@@ -10363,6 +10446,14 @@ exports["default"] = _default;
 
 "use strict";
 module.exports = require("assert");
+
+/***/ }),
+
+/***/ 2081:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 

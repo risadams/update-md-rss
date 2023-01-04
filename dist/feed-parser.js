@@ -24,8 +24,7 @@ function FeedParser(options) {
     return __awaiter(this, void 0, void 0, function* () {
         const parser = new rss_parser_1.default({
             headers: {
-                'User-Agent': options.userAgent,
-                Accept: options.acceptHeader
+                'User-Agent': options.userAgent
             }
         });
         if (isNaN(options.maxItems)) {
